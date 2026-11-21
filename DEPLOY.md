@@ -16,7 +16,13 @@ Perkiraan waktu: 30–45 menit untuk pertama kali.
 - Akun Oracle Cloud. Kartu dipakai untuk verifikasi; selama tetap dalam kuota
   Always Free tidak ada tagihan.
 - Repo GitHub **privat** berisi proyek ini.
-- SSH key di komputer Windows.
+- SSH key di komputer Windows:
+
+  ```powershell
+  ssh-keygen -t ed25519 -C "mangashelf"
+  ```
+
+  Jika sudah punya `~/.ssh/id_ed25519.pub`, lewati langkah ini.
 - Alamat `sslip.io` gratis: cukup ganti titik pada IP dengan format
   `IP.sslip.io`, misalnya `mangashelf.203.0.113.10.sslip.io`. DNS-nya otomatis
   menunjuk ke IP tersebut, dan Caddy bisa menerbitkan sertifikat Let's Encrypt.
@@ -239,6 +245,7 @@ docker compose start app
 | Gejala | Periksa |
 |---|---|
 | Sertifikat tidak terbit | DNS `sslip.io` harus menunjuk IP VM; port 80 dan 443 terbuka di Security List dan `ufw`; lihat `docker compose logs caddy` |
+| Sertifikat tetap gagal | Coba subdomain gratis DuckDNS (`namamu.duckdns.org`) yang diarahkan ke IP VM, lalu ganti `SITE_ADDRESS` |
 | Login berhasil tapi kembali ke halaman masuk | Akses harus lewat `https://`; cookie `Secure` tidak dikirim lewat HTTP |
 | `502 Bad Gateway` | `docker compose ps` dan `docker compose logs app`; app harus sehat |
 | Data hilang setelah redeploy | Pastikan volume `mangashelf_data` terpasang di `/data`; jangan `docker compose down -v` |
@@ -266,5 +273,6 @@ docker system df             # cek pemakaian disk
 
   ```bash
   docker compose pull
-  docker compose up -d --build
+  docker compose build --pull
+  docker compose up -d
   ```

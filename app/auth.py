@@ -55,6 +55,10 @@ def _rahasia() -> str:
 
     nilai = secrets.token_urlsafe(48)
     lokasi.write_text(nilai, encoding="utf-8")
+    try:
+        lokasi.chmod(0o600)
+    except OSError:
+        pass
     return nilai
 
 
