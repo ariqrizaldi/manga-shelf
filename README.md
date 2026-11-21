@@ -58,8 +58,9 @@ docker compose up -d --build
 ```
 
 Butuh domain/subdomain yang menunjuk ke mesin tersebut agar Caddy bisa
-menerbitkan HTTPS. Panduan lengkap untuk Oracle Cloud Always Free ada di
-[`DEPLOY.md`](DEPLOY.md).
+menerbitkan HTTPS. Panduan Oracle Cloud Always Free ada di
+[`DEPLOY.md`](DEPLOY.md). Untuk hosting tanpa kartu di PC Windows memakai
+Tailscale Funnel, lihat [`DEPLOY-TAILSCALE.md`](DEPLOY-TAILSCALE.md).
 
 ## Tes
 
