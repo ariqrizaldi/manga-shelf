@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="robots" content="noindex">
+  <title>{% block title %}MangaShelf{% endblock %}</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <script src="/static/js/htmx.min.js" defer></script>
+  <script src="/static/js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#konten">Lewati ke konten</a>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="/">MangaShelf</a>
+      <form class="search" action="/" method="get" role="search">
+        <label class="sr-only" for="q-global">Cari judul atau author</label>
+        <input id="q-global" type="search" name="q" value="{{ q or '' }}"
+               placeholder="Cari judul / author" autocomplete="off">
+        {% if kelengkapan is defined and kelengkapan != 'semua' %}
+        <input type="hidden" name="kelengkapan" value="{{ kelengkapan }}">
+        {% endif %}
+        {% if status_baca is defined and status_baca != 'semua' %}
+        <input type="hidden" name="status_baca" value="{{ status_baca }}">
+        {% endif %}
+        {% if rating is defined and rating != 'semua' %}
+        <input type="hidden" name="rating" value="{{ rating }}">
+        {% endif %}
+        {% if urutan is defined and urutan != 'abjad' %}
+        <input type="hidden" name="urut" value="{{ urutan }}">
+        {% endif %}
+        {% if view is defined and view != 'grid' %}
+        <input type="hidden" name="view" value="{{ view }}">
+        {% endif %}
+      </form>
+      <a class="btn btn-primary topbar-add" href="/manga/baru">+ Tambah manga</a>
+    </div>
+  </header>
+
+  <main id="konten" class="wrap main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span class="muted">Koleksi pribadi{% if not auth_aktif %}, tanpa akun{% endif %}.</span>
+      <nav aria-label="Tautan kaki">
+        <a href="/daftar-kurang">Daftar kurang</a>
+        <a href="/pengaturan">Pengaturan &amp; ekspor</a>
+        {% if auth_aktif %}
+        <form class="logout-form" method="post" action="/keluar">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="link-btn" type="submit">Keluar</button>
+        </form>
+        {% endif %}
+      </nav>
+    </div>
+  </footer>
+
+  {% set path = request.url.path %}
+  {% if path in ['/', '/judul', '/daftar-kurang', '/pengaturan'] %}
+  <a class="btn btn-primary fab" href="/manga/baru" aria-label="Tambah manga">+ Tambah manga</a>
+  {% endif %}
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  {% if request.query_params.get("toast") %}
+  <script>window.__toastAwal = {{ request.query_params.get("toast") | tojson }};</script>
+  {% endif %}
+</body>
+</html>

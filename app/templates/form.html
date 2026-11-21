@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}{{ judul_halaman }} — MangaShelf{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navigasi">
+  <a href="{{ '/manga/' ~ manga.id if mode == 'edit' else '/' }}">← {{ 'Kembali ke detail' if mode == 'edit' else 'Koleksi' }}</a>
+</nav>
+
+<div class="form-layout">
+  <h1 class="page-title">{{ judul_halaman }}</h1>
+  <p class="muted form-intro">Hanya judul yang wajib. Field lain bisa diisi nanti.</p>
+
+  {% if mirip %}
+  <div class="warning-box" role="alert">
+    <h2>Judul serupa sudah ada</h2>
+    <p>Periksa dulu agar tidak membuat entri ganda:</p>
+    <ul>
+      {% for m in mirip %}
+      <li><a href="/manga/{{ m.id }}">{{ m.judul }}</a>{% if m.author %} — {{ m.author }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+    <p>Kalau ini judul yang berbeda, kamu tetap bisa menyimpan.</p>
+  </div>
+  {% endif %}
+
+  <form method="post" class="panel form-panel"
+        action="{{ '/manga/' ~ manga.id ~ '/edit' if mode == 'edit' else '/manga/baru' }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <div class="field">
+      <label class="label" for="judul">Judul <span class="required" aria-hidden="true">*</span></label>
+      <input id="judul" name="judul" value="{{ nilai.judul }}" maxlength="200" required
+             autocomplete="off" {{ 'aria-invalid=true' if errors.judul }}
+             aria-describedby="err-judul">
+      {% if errors.judul %}<p class="form-error" id="err-judul">{{ errors.judul }}</p>{% endif %}
+    </div>
+
+    <div class="field">
+      <label class="label" for="author">Author</label>
+      <input id="author" name="author" value="{{ nilai.author }}" maxlength="200" autocomplete="off">
+    </div>
+
+    <div class="form-grid two">
+      <div class="field">
+        <span class="label">Status rilis</span>
+        <div class="segmented" role="group" aria-label="Status rilis">
+          <label class="seg">
+            <input type="radio" name="status_rilis" value="ongoing"
+                   {{ 'checked' if nilai.status_rilis != 'tamat' }}>
+            <span>Ongoing</span>
+          </label>
+          <label class="seg">
+            <input type="radio" name="status_rilis" value="tamat"
+                   {{ 'checked' if nilai.status_rilis == 'tamat' }}>
+            <span>Tamat</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="total_volume">Total volume</label>
+        <input id="total_volume" name="total_volume" type="number" inputmode="numeric"
+               min="0" max="1000" value="{{ nilai.total_volume }}"
+               {{ 'aria-invalid=true' if errors.total_volume }}>
+        {% if errors.total_volume %}
+        <p class="form-error">{{ errors.total_volume }}</p>
+        {% else %}
+        <p class="hint">0 atau kosong = belum diketahui.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-grid two">
+      <div class="field">
+        <label class="label" for="status_baca">Status baca</label>
+        <select id="status_baca" name="status_baca">
+          <option value="belum" {{ 'selected' if nilai.status_baca == 'belum' }}>Belum dibaca</option>
+          <option value="sedang" {{ 'selected' if nilai.status_baca == 'sedang' }}>Sedang dibaca</option>
+          <option value="selesai" {{ 'selected' if nilai.status_baca == 'selesai' }}>Selesai</option>
+          <option value="dihentikan" {{ 'selected' if nilai.status_baca == 'dihentikan' }}>Dihentikan</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="label" for="rating">Rating</label>
+        <select id="rating" name="rating">
+          <option value="">Belum ada</option>
+          {% for n in [5, 4, 3, 2, 1] %}
+          <option value="{{ n }}" {{ 'selected' if nilai.rating|string == n|string }}>{{ n }} bintang</option>
+          {% endfor %}
+        </select>
+        {% if errors.rating %}<p class="form-error">{{ errors.rating }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="catatan">Catatan</label>
+      <textarea id="catatan" name="catatan" rows="3"
+                placeholder="Mis. edisi khusus, kondisi, atau target pembelian">{{ nilai.catatan }}</textarea>
+    </div>
+
+    <div class="field">
+      <label class="label" for="cover_url">URL cover</label>
+      <input id="cover_url" name="cover_url" value="{{ nilai.cover_url }}" inputmode="url"
+             placeholder="https://…" {{ 'aria-invalid=true' if errors.cover_url }}>
+      {% if errors.cover_url %}
+      <p class="form-error">{{ errors.cover_url }}</p>
+      {% else %}
+      <p class="hint">Opsional. Kosong atau gagal dimuat akan memakai placeholder inisial.</p>
+      {% endif %}
+    </div>
+
+    <div class="form-actions">
+      {% if mirip %}
+      <button class="btn btn-primary" type="submit" name="konfirmasi" value="1">Tetap simpan</button>
+      <a class="btn" href="{{ '/manga/' ~ manga.id if mode == 'edit' else '/' }}">Batal</a>
+      {% else %}
+      <button class="btn btn-primary" type="submit">Simpan</button>
+      <a class="btn" href="{{ '/manga/' ~ manga.id if mode == 'edit' else '/' }}">Batal</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

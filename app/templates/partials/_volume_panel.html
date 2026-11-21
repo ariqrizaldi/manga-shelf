@@ -1,0 +1,143 @@
+{% set m = v.manga %}
+<section class="panel volume-panel" id="volume-panel">
+  <div class="panel-head">
+    <h2>Volume</h2>
+    <span class="badge {{ v.badge }}">{{ v.status_label }}</span>
+  </div>
+
+  {% if error and error_area == 'umum' %}
+  <p class="alert" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <div class="volume-meter">
+    <div class="meter-label">
+      <span>{{ v.dimiliki }} dimiliki · {{ v.kurang }} kurang</span>
+      <span class="muted">{{ v.dimiliki }}/{{ m.total_volume or '?' }}</span>
+    </div>
+    <div class="progress" role="img" aria-label="{{ v.dimiliki }} dari {{ v.batas }} volume dimiliki">
+      {% for seg in v.segments %}
+      <span class="progress-seg"><span class="progress-fill" style="width: {{ seg.pct }}%"></span></span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="rilis-row">
+    <span class="label">Status rilis</span>
+    <div class="segmented" role="group" aria-label="Status rilis">
+      <button type="button" class="seg-btn {{ 'is-active' if m.status_rilis == 'ongoing' }}"
+              hx-post="/manga/{{ m.id }}/rilis" hx-vals='{"value": "ongoing"}'
+              hx-target="#volume-panel" hx-swap="outerHTML">Ongoing</button>
+      <button type="button" class="seg-btn {{ 'is-active' if m.status_rilis == 'tamat' }}"
+              hx-post="/manga/{{ m.id }}/rilis" hx-vals='{"value": "tamat"}'
+              hx-target="#volume-panel" hx-swap="outerHTML">Tamat</button>
+    </div>
+  </div>
+
+  {% if error and error_area == 'rilis' %}
+  <p class="form-error" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <div class="total-row">
+    <div class="total-control">
+      <span class="label">{{ 'Volume terbit sejauh ini' if m.status_rilis == 'ongoing' else 'Total volume (final)' }}</span>
+      <div class="stepper">
+        <button type="button" aria-label="Kurangi total volume"
+                hx-post="/manga/{{ m.id }}/total" hx-vals='{"delta": -1}'
+                hx-target="#volume-panel" hx-swap="outerHTML"
+                {% if m.total_volume <= 0 %}disabled{% endif %}>−</button>
+        <strong class="stepper-value">{{ m.total_volume }}</strong>
+        <button type="button" aria-label="Tambah total volume"
+                hx-post="/manga/{{ m.id }}/total" hx-vals='{"delta": 1}'
+                hx-target="#volume-panel" hx-swap="outerHTML"
+                {% if m.total_volume >= 1000 %}disabled{% endif %}>+</button>
+      </div>
+    </div>
+
+    {% if m.status_rilis == 'ongoing' %}
+    <button type="button" class="btn btn-primary btn-full"
+            hx-post="/manga/{{ m.id }}/volume-baru"
+            hx-target="#volume-panel" hx-swap="outerHTML">
+      + Volume baru terbit (vol {{ m.total_volume + 1 }})
+    </button>
+    {% endif %}
+  </div>
+
+  {% if error and error_area == 'total' %}
+  <p class="form-error" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <form class="range-form" hx-post="/manga/{{ m.id }}/rentang"
+        hx-target="#volume-panel" hx-swap="outerHTML">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="label" for="rentang">Input rentang volume</label>
+    <input id="rentang" name="rentang" value="{{ rentang_value }}"
+           placeholder="1-20, 25, 30-44" inputmode="numeric" autocomplete="off"
+           hx-get="/manga/{{ m.id }}/rentang/preview"
+           hx-trigger="input changed delay:300ms"
+           hx-target="#rentang-preview" hx-include="closest form">
+    {% if error and error_area == 'rentang' %}
+    <p class="form-error" role="alert">{{ error }}</p>
+    {% endif %}
+    <div id="rentang-preview" class="preview" aria-live="polite"></div>
+
+    <div class="range-actions">
+      <button type="button" class="btn btn-primary"
+              hx-post="/manga/{{ m.id }}/rentang" hx-vals='{"mode": "tambah"}'
+              hx-include="closest form" hx-target="#volume-panel" hx-swap="outerHTML">Tambah</button>
+      <button type="button" class="btn"
+              hx-post="/manga/{{ m.id }}/rentang" hx-vals='{"mode": "hapus"}'
+              hx-include="closest form" hx-target="#volume-panel" hx-swap="outerHTML">Hapus</button>
+      <details class="advanced">
+        <summary>Opsi lanjutan</summary>
+        <button type="button" class="btn btn-danger"
+                hx-post="/manga/{{ m.id }}/rentang" hx-vals='{"mode": "ganti"}'
+                hx-include="closest form" hx-target="#volume-panel" hx-swap="outerHTML"
+                hx-confirm="Ganti semua catatan volume dengan isi input? Volume lain akan dihapus.">
+          Ganti semua
+        </button>
+        <p class="hint">Menimpa seluruh catatan volume dengan isi input.</p>
+      </details>
+    </div>
+  </form>
+
+  <div class="range-quick">
+    <button type="button" class="btn btn-small"
+            hx-post="/manga/{{ m.id }}/punya-semua"
+            hx-target="#volume-panel" hx-swap="outerHTML">Punya semua</button>
+    <button type="button" class="btn btn-small btn-danger"
+            hx-post="/manga/{{ m.id }}/kosongkan"
+            hx-target="#volume-panel" hx-swap="outerHTML"
+            hx-confirm="Kosongkan semua catatan volume judul ini?">Kosongkan</button>
+  </div>
+
+  <div class="volume-grid-head">
+    <span class="label">Petak volume</span>
+    <span class="muted">{{ v.dimiliki }} dimiliki · {{ v.kurang }} kurang</span>
+  </div>
+
+  {% if v.batas > 0 %}
+  <div class="volume-grid" role="group" aria-label="Petak volume {{ m.judul }}">
+    {% for n in range(1, v.batas + 1) %}
+    {% set milik = n in v.dimiliki_set %}
+    <button type="button" class="petak {{ 'petak-owned' if milik }}"
+            hx-post="/manga/{{ m.id }}/volume/{{ n }}/toggle"
+            hx-target="#volume-panel" hx-swap="outerHTML"
+            aria-pressed="{{ 'true' if milik else 'false' }}"
+            aria-label="Volume {{ n }}, {{ 'dimiliki' if milik else 'belum dimiliki' }}">{{ n }}</button>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="hint empty-grid">Isi total volume untuk membuat petak. Bila total belum diketahui, ketik nomor volume yang dimiliki lewat input rentang.</p>
+  {% endif %}
+
+  <div class="missing-box">
+    <div class="missing-head">
+      <span class="label">Ringkasan kekurangan</span>
+      {% if v.kurang > 0 %}
+      <button type="button" class="btn btn-small" data-copy="{{ v.ringkasan_kurang }}"
+              onclick="salinTeks(this)">Salin</button>
+      {% endif %}
+    </div>
+    <p>{{ v.ringkasan_kurang }}</p>
+  </div>
+</section>

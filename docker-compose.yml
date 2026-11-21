@@ -1,0 +1,38 @@
+name: mangashelf
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      MANGA_DB: /data/manga.db
+      MANGA_PASSWORD: ${MANGA_PASSWORD:?Isi MANGA_PASSWORD di berkas .env}
+      MANGA_SECRET: ${MANGA_SECRET:?Isi MANGA_SECRET di berkas .env}
+      MANGA_HTTPS: "1"
+    volumes:
+      - data:/data
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Isi SITE_ADDRESS di berkas .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  data:
+    name: mangashelf_data
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{{ judul_halaman }} — MangaShelf</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+</head>
+<body class="login-body">
+  <main class="login-wrap">
+    <section class="panel login-card" aria-labelledby="judul-masuk">
+      <p class="login-brand">MangaShelf</p>
+      <h1 id="judul-masuk" class="login-title">Masuk</h1>
+      <p class="muted login-intro">Koleksi pribadi. Masukkan kata sandi untuk melanjutkan.</p>
+
+      {% if pesan %}
+      <p class="login-info" role="status">{{ pesan }}</p>
+      {% endif %}
+      {% if error %}
+      <p class="form-error login-error" role="alert">{{ error }}</p>
+      {% endif %}
+
+      <form method="post" action="/masuk">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="next" value="{{ tujuan }}">
+        <div class="field">
+          <label class="label" for="sandi">Kata sandi</label>
+          <input id="sandi" type="password" name="sandi"
+                 autocomplete="current-password" required autofocus>
+        </div>
+        <button class="btn btn-primary btn-full" type="submit">Masuk</button>
+      </form>
+    </section>
+    <p class="login-foot muted">Data tersimpan di server pribadi.</p>
+  </main>
+</body>
+</html>

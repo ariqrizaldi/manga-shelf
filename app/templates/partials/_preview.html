@@ -1,0 +1,7 @@
+{% if kosong %}
+<span class="muted">Ketik rentang untuk melihat pratinjau.</span>
+{% elif error %}
+<span class="preview-error">{{ error }}</span>
+{% else %}
+<span>{{ jumlah }} nomor dikenali · <strong>+{{ tambah }}</strong> volume, <strong>−{{ hapus }}</strong> volume</span>
+{% endif %}

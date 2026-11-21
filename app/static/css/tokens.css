@@ -1,0 +1,58 @@
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("/static/fonts/press-start-2p-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("/static/fonts/ibm-plex-sans-latin.woff2") format("woff2");
+  font-weight: 100 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #2a2b2f;
+  --surface: #36383d;
+  --surface-raised: #43454b;
+  --surface-hover: #4d4f56;
+  --ink: #ebe7dc;
+  --ink-muted: #b6b4ab;
+  --line: #17181b;
+  /* Sedikit lebih gelap dari DESIGN.md agar teks di atasnya >= 4.5:1. */
+  --accent: #c61d26;
+  --accent-hover: #b51820;
+  --danger-ink: #ff8a8a;
+  --focus: #ff8a8a;
+
+  --st-belum: #8a8c93;
+  --st-sedang: #e0b32a;
+  --st-selesai: #2d7440;
+  --st-henti: #4264b4;
+
+  --font-display: "Press Start 2P", monospace;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+
+  --radius: 2px;
+  --border: 2px solid var(--line);
+  --shadow: 4px 4px 0 var(--line);
+  --shadow-pressed: 1px 1px 0 var(--line);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --fs-display: 20px;
+  --fs-stat: 24px;
+  --fs-lg: 18px;
+  --fs-base: 16px;
+  --fs-sm: 14px;
+
+  color-scheme: dark;
+}

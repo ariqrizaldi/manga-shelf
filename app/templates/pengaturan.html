@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Pengaturan & ekspor — MangaShelf{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navigasi">
+  <a href="/">← Koleksi</a>
+</nav>
+
+<h1 class="page-title">Pengaturan &amp; ekspor</h1>
+<p class="muted form-intro">Data disimpan lokal di SQLite. Ekspor rutin untuk cadangan.</p>
+
+<div class="settings-grid">
+  <section class="panel">
+    <h2>Ringkasan data</h2>
+    <dl class="info-list">
+      <div><dt>Total judul</dt><dd>{{ total_judul }}</dd></div>
+      <div><dt>Volume dimiliki</dt><dd>{{ total_volume }}</dd></div>
+      <div><dt>Volume kurang</dt><dd>{{ total_kurang }}</dd></div>
+      <div><dt>Berkas database</dt><dd class="path">{{ lokasi_db }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <h2>Ekspor</h2>
+    <p class="muted">Unduh seluruh judul beserta catatan volumenya.</p>
+    <div class="export-actions">
+      <a class="btn btn-primary" href="/ekspor/json">Unduh JSON</a>
+      <a class="btn" href="/ekspor/csv">Unduh CSV</a>
+      <a class="btn" href="/daftar-kurang/unduh?format=txt">Daftar kurang (TXT)</a>
+    </div>
+    <p class="hint">JSON memuat daftar nomor volume; CSV memuat rentang volume yang ringkas. Impor tersedia di Fase 2.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Cadangan manual</h2>
+    <p class="muted">Salin berkas <code>manga.db</code> ke cloud atau flashdisk secara berkala. SQLite menyimpan seluruh data dalam satu berkas.</p>
+    <p class="hint">Aplikasi ini single-user dan dilindungi kata sandi saat di-host publik.</p>
+  </section>
+</div>
+{% endblock %}

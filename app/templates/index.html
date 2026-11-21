@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}MangaShelf — Koleksi manga{% endblock %}
+
+{% block content %}
+<section class="stats" aria-label="Statistik koleksi">
+  <div class="stat-card">
+    <span class="stat-number">{{ statistik.total_judul }}</span>
+    <span class="stat-label">Total judul</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-number">{{ statistik.volume_dimiliki }}</span>
+    <span class="stat-label">Volume dimiliki</span>
+  </div>
+  <a class="stat-card stat-link" href="/daftar-kurang">
+    <span class="stat-number">{{ statistik.volume_kurang }}</span>
+    <span class="stat-label">Volume kurang</span>
+  </a>
+  <div class="stat-card">
+    <span class="stat-number">{{ statistik.belum_lengkap }}</span>
+    <span class="stat-label">Judul belum lengkap</span>
+  </div>
+</section>
+
+<form class="toolbar" action="/" method="get"
+      hx-get="/judul" hx-target="#daftar" hx-push-url="true" hx-trigger="change">
+  <input type="hidden" name="q" value="{{ q }}">
+
+  <div class="toolbar-filters">
+    <label class="filter-field">
+      <span>Kelengkapan</span>
+      <select name="kelengkapan">
+        {% for kunci, label in opsi_kelengkapan.items() %}
+        <option value="{{ kunci }}" {{ 'selected' if kelengkapan == kunci }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="filter-field">
+      <span>Status baca</span>
+      <select name="status_baca">
+        <option value="semua" {{ 'selected' if status_baca == 'semua' }}>Semua</option>
+        {% for kunci, label in opsi_status_baca.items() %}
+        <option value="{{ kunci }}" {{ 'selected' if status_baca == kunci }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="filter-field">
+      <span>Rating</span>
+      <select name="rating">
+        <option value="semua" {{ 'selected' if rating == 'semua' }}>Semua</option>
+        {% for n in [5, 4, 3, 2, 1] %}
+        <option value="{{ n }}" {{ 'selected' if rating == n|string }}>{{ n }} bintang</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label class="filter-field">
+      <span>Urut</span>
+      <select name="urut">
+        {% for kunci, label in opsi_urutan.items() %}
+        <option value="{{ kunci }}" {{ 'selected' if urutan == kunci }}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </div>
+
+  <div class="view-toggle segmented" role="group" aria-label="Tampilan daftar">
+    <label class="seg">
+      <input type="radio" name="view" value="grid" {{ 'checked' if view == 'grid' }}>
+      <span aria-hidden="true">▦</span><span class="sr-only">Grid</span>
+    </label>
+    <label class="seg">
+      <input type="radio" name="view" value="list" {{ 'checked' if view == 'list' }}>
+      <span aria-hidden="true">☰</span><span class="sr-only">Daftar</span>
+    </label>
+  </div>
+
+  <noscript><button class="btn btn-small" type="submit">Terapkan</button></noscript>
+</form>
+
+<div id="daftar">
+  {% include "partials/_daftar.html" %}
+</div>
+{% endblock %}

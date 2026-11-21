@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Daftar kurang — MangaShelf{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navigasi">
+  <a href="/">← Koleksi</a>
+</nav>
+
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Daftar kurang</h1>
+    <p class="muted">Bawa daftar ini saat belanja supaya tidak membeli volume yang sudah dimiliki.</p>
+  </div>
+  <div class="page-actions">
+    {% if daftar %}
+    <button type="button" class="btn" data-copy-target="#salinan-semua" onclick="salinTeks(this)">Salin semua</button>
+    <a class="btn" href="/daftar-kurang/unduh?format=txt">Unduh TXT</a>
+    <a class="btn" href="/daftar-kurang/unduh?format=csv">Unduh CSV</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if daftar %}
+<div class="list-summary">
+  <span><strong>{{ daftar|length }}</strong> judul</span>
+  <span><strong>{{ total_kurang }}</strong> volume kurang</span>
+  <span class="sort-links">Urut:
+    <a href="/daftar-kurang?urut=kurang" class="{{ 'is-active' if urut == 'kurang' }}">paling dekat lengkap</a>
+    <a href="/daftar-kurang?urut=judul" class="{{ 'is-active' if urut == 'judul' }}">abjad</a>
+  </span>
+</div>
+
+<div class="kurang-list">
+  {% for v in daftar %}
+  {% set m = v.manga %}
+  <article class="kurang-item">
+    <div class="kurang-main">
+      <div class="kurang-title-row">
+        <h2><a href="/manga/{{ m.id }}">{{ m.judul }}</a></h2>
+        <span class="badge {{ v.badge }}">{{ v.status_label }}</span>
+      </div>
+      <p class="muted">{{ m.author or 'Author belum diisi' }} · {{ v.dimiliki }}/{{ m.total_volume or '?' }} dimiliki · {{ v.kurang }} kurang</p>
+      <p class="kurang-ranges">{{ v.ringkasan_kurang }}</p>
+    </div>
+    <div class="kurang-actions">
+      <button type="button" class="btn btn-small" data-copy="{{ v.ringkasan_kurang }}"
+              onclick="salinTeks(this)">Salin</button>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+
+<textarea id="salinan-semua" class="sr-only" readonly aria-hidden="true">{{ teks_semua }}</textarea>
+{% else %}
+<div class="empty">
+  <h2>Tidak ada kekurangan.</h2>
+  <p>Semua judul yang sudah punya volume tercatat lengkap atau sudah terbaru.</p>
+  <a class="btn btn-primary" href="/">Kembali ke koleksi</a>
+</div>
+{% endif %}
+{% endblock %}

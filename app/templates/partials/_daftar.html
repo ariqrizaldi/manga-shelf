@@ -1,0 +1,93 @@
+{% if views %}
+  {% if view == 'list' %}
+  <div class="list-wrap">
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th scope="col">Judul</th>
+          <th scope="col">Kelengkapan</th>
+          <th scope="col">Dimiliki</th>
+          <th scope="col">Progres</th>
+          <th scope="col">Kurang</th>
+          <th scope="col"><span class="sr-only">Aksi</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in views %}
+        {% set m = v.manga %}
+        <tr>
+          <td data-label="Judul">
+            <div class="row-title">
+              <span class="thumb" aria-hidden="true">{{ inisial(m.judul) }}</span>
+              <span class="row-title-text">
+                <a href="/manga/{{ m.id }}">{{ m.judul }}</a>
+                <small class="muted">{{ m.author or 'Author belum diisi' }}</small>
+              </span>
+            </div>
+          </td>
+          <td data-label="Kelengkapan"><span class="badge {{ v.badge }}">{{ v.status_label }}</span></td>
+          <td data-label="Dimiliki">{{ v.dimiliki }}/{{ m.total_volume or '?' }}</td>
+          <td data-label="Progres">
+            <div class="progress" role="img" aria-label="{{ v.dimiliki }} dari {{ v.batas }} volume dimiliki">
+              {% for seg in v.segments %}
+              <span class="progress-seg"><span class="progress-fill" style="width: {{ seg.pct }}%"></span></span>
+              {% endfor %}
+            </div>
+          </td>
+          <td data-label="Kurang">{{ v.kurang }}</td>
+          <td data-label="Aksi"><a class="btn btn-small" href="/manga/{{ m.id }}">Detail</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="manga-grid">
+    {% for v in views %}
+    {% include "partials/_card.html" %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="result-summary muted">
+    Menampilkan {{ (page - 1) * 24 + 1 }}–{{ [page * 24, total_hasil]|min }} dari {{ total_hasil }} judul
+  </div>
+
+  {% if total_halaman > 1 %}
+  <nav class="pagination" aria-label="Halaman daftar">
+    <a class="page-btn {{ 'is-disabled' if page <= 1 }}"
+       href="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ page - 1 }}"
+       {% if page > 1 %}hx-get="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ page - 1 }}"
+       hx-target="#daftar" hx-push-url="true"{% else %}aria-disabled="true" tabindex="-1"{% endif %}>←</a>
+
+    {% for n in nomor_halaman %}
+      {% if n == -1 %}
+      <span class="page-gap" aria-hidden="true">…</span>
+      {% else %}
+      <a class="page-btn {{ 'is-active' if n == page }}"
+         href="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ n }}"
+         hx-get="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ n }}"
+         hx-target="#daftar" hx-push-url="true"
+         {% if n == page %}aria-current="page"{% endif %}>{{ n }}</a>
+      {% endif %}
+    {% endfor %}
+
+    <a class="page-btn {{ 'is-disabled' if page >= total_halaman }}"
+       href="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ page + 1 }}"
+       {% if page < total_halaman %}hx-get="/judul?{{ basis_query }}{% if basis_query %}&{% endif %}page={{ page + 1 }}"
+       hx-target="#daftar" hx-push-url="true"{% else %}aria-disabled="true" tabindex="-1"{% endif %}>→</a>
+  </nav>
+  {% endif %}
+{% else %}
+  <div class="empty">
+    {% if statistik.total_judul == 0 %}
+    <h2>Belum ada manga.</h2>
+    <p>Tambah judul pertama, lalu isi volume yang kamu miliki.</p>
+    <a class="btn btn-primary" href="/manga/baru">+ Tambah manga</a>
+    {% else %}
+    <h2>Tidak ada judul yang cocok.</h2>
+    <p>Ubah kata pencarian atau filternya.</p>
+    <a class="btn" href="/">Reset pencarian &amp; filter</a>
+    {% endif %}
+  </div>
+{% endif %}

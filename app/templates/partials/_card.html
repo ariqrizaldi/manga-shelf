@@ -1,0 +1,29 @@
+{% set m = v.manga %}
+<article class="card">
+  <a class="cover card-cover" href="/manga/{{ m.id }}" aria-label="Lihat {{ m.judul }}">
+    <span class="cover-ph" aria-hidden="true">{{ inisial(m.judul) }}</span>
+    {% if m.cover_url %}
+    <img src="{{ m.cover_url }}" alt="Cover {{ m.judul }}" loading="lazy" onerror="this.hidden=true">
+    {% endif %}
+  </a>
+  <div class="card-body">
+    <h2 class="card-title"><a href="/manga/{{ m.id }}">{{ m.judul }}</a></h2>
+    <p class="card-author">{{ m.author or 'Author belum diisi' }}</p>
+    <div class="card-badges">
+      <span class="badge {{ v.badge }}">{{ v.status_label }}</span>
+      <span class="badge badge-rilis">{{ v.status_rilis_label }}</span>
+    </div>
+    <div class="card-meta">
+      <span>vol {{ v.dimiliki }}/{{ m.total_volume or '?' }}</span>
+      <span>{{ v.kurang }} kurang</span>
+    </div>
+    <div class="progress" role="img" aria-label="{{ v.dimiliki }} dari {{ v.batas }} volume dimiliki">
+      {% for seg in v.segments %}
+      <span class="progress-seg"><span class="progress-fill" style="width: {{ seg.pct }}%"></span></span>
+      {% endfor %}
+    </div>
+    {% if v.kurang > 0 %}
+    <p class="card-missing">{{ v.ringkasan_kurang }}</p>
+    {% endif %}
+  </div>
+</article>

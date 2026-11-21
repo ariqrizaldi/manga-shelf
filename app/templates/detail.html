@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ manga.judul }} — MangaShelf{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Navigasi">
+  <a href="/">← Koleksi</a>
+</nav>
+
+<div class="detail-grid">
+  <aside class="panel detail-info">
+    <div class="cover cover-large">
+      <span class="cover-ph" aria-hidden="true">{{ inisial(manga.judul) }}</span>
+      {% if manga.cover_url %}
+      <img src="{{ manga.cover_url }}" alt="Cover {{ manga.judul }}" loading="lazy" onerror="this.hidden=true">
+      {% endif %}
+    </div>
+
+    <h1 class="page-title detail-title">{{ manga.judul }}</h1>
+    <p class="muted detail-author">{{ manga.author or 'Author belum diisi' }}</p>
+
+    <div class="badges">
+      <span class="badge {{ v.badge }}">{{ v.status_label }}</span>
+      <span class="badge badge-baca">{{ v.status_baca_label }}</span>
+      <span class="badge badge-rilis">{{ v.status_rilis_label }}</span>
+    </div>
+
+    <dl class="info-list">
+      <div><dt>Rating</dt><dd>{% if manga.rating %}{{ '★' * manga.rating }} ({{ manga.rating }}/5){% else %}—{% endif %}</dd></div>
+      <div><dt>Dimiliki</dt><dd>{{ v.dimiliki }} volume</dd></div>
+      <div><dt>Kurang</dt><dd>{{ v.kurang }} volume</dd></div>
+      <div><dt>Ditambahkan</dt><dd>{{ v.tanggal_label }}</dd></div>
+    </dl>
+
+    {% if manga.catatan %}
+    <section class="notes">
+      <h2>Catatan</h2>
+      <p>{{ manga.catatan }}</p>
+    </section>
+    {% endif %}
+
+    <div class="detail-actions">
+      <a class="btn" href="/manga/{{ manga.id }}/edit">Edit</a>
+      <button class="btn btn-danger" type="button"
+              onclick="document.getElementById('dialog-hapus').showModal()">Hapus</button>
+    </div>
+  </aside>
+
+  {% include "partials/_volume_panel.html" %}
+</div>
+
+<dialog id="dialog-hapus" class="dialog" aria-labelledby="judul-dialog-hapus">
+  <h2 id="judul-dialog-hapus">Hapus {{ manga.judul }}?</h2>
+  <p>Data judul beserta catatan volumenya tidak bisa dikembalikan.</p>
+  <form method="post" action="/manga/{{ manga.id }}/hapus" class="dialog-actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="button" class="btn" onclick="document.getElementById('dialog-hapus').close()">Batal</button>
+    <button type="submit" class="btn btn-danger">Hapus</button>
+  </form>
+</dialog>
+{% endblock %}
