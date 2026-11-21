@@ -49,18 +49,20 @@ Database dibuat otomatis di `data/manga.db` (mode WAL). Untuk memakai lokasi lai
 $env:MANGA_DB = "D:\cadangan\manga.db"
 ```
 
-## Menjalankan dengan Docker
+## Hosting publik via Tailscale Funnel
+
+Jalur ini tidak membutuhkan kartu kredit atau domain. Aplikasi berjalan di PC
+Windows dan diekspos lewat Tailscale Funnel.
 
 ```powershell
 Copy-Item .env.example .env
-# edit .env: SITE_ADDRESS, MANGA_PASSWORD, MANGA_SECRET
-docker compose up -d --build
+# edit .env: MANGA_PASSWORD, MANGA_SECRET
+.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --env-file .env
+& "C:\Program Files\Tailscale\tailscale.exe" funnel --bg 8000
 ```
 
-Butuh domain/subdomain yang menunjuk ke mesin tersebut agar Caddy bisa
-menerbitkan HTTPS. Panduan Oracle Cloud Always Free ada di
-[`DEPLOY.md`](DEPLOY.md). Untuk hosting tanpa kartu di PC Windows memakai
-Tailscale Funnel, lihat [`DEPLOY-TAILSCALE.md`](DEPLOY-TAILSCALE.md).
+Panduan lengkap, autostart, dan backup ada di
+[`DEPLOY-TAILSCALE.md`](DEPLOY-TAILSCALE.md).
 
 ## Tes
 
@@ -86,9 +88,7 @@ app/
 ├── templates/           # Jinja2 + partial HTMX
 └── static/              # token & komponen CSS, HTMX, font lokal
 scripts/backup.py        # salinan SQLite aman saat aplikasi hidup
-Dockerfile               # image aplikasi
-docker-compose.yml       # app + Caddy (HTTPS otomatis)
-Caddyfile
+scripts/run-server.ps1   # autostart + restart Uvicorn untuk Tailscale Funnel
 ```
 
 ## Catatan
@@ -98,5 +98,5 @@ Caddyfile
 - Hanya volume yang dimiliki yang disimpan. Kurang/bolong dihitung dari total volume, jadi judul dengan total belum diketahui tetap didukung.
 - Menurunkan total di bawah volume tertinggi yang dimiliki ditolak agar data tidak hilang diam-diam.
 - Font Press Start 2P dan IBM Plex Sans di-host lokal di `app/static/fonts`.
-- Jalankan satu proses Uvicorn saja; SQLite tidak cocok untuk banyak penulis paralel. Konfigurasi Docker sudah memakai satu worker.
-- Cadangkan rutin lewat ekspor JSON atau `scripts/backup.py`; lihat [`DEPLOY.md`](DEPLOY.md).
+- Jalankan satu proses Uvicorn saja; SQLite tidak cocok untuk banyak penulis paralel.
+- Cadangkan rutin lewat ekspor JSON atau `scripts/backup.py`; lihat [`DEPLOY-TAILSCALE.md`](DEPLOY-TAILSCALE.md).

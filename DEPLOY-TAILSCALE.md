@@ -52,6 +52,18 @@ Shortcut `MangaShelf.lnk` di folder Startup menjalankan
 - menyalakan ulang proses jika berhenti;
 - mencegah dua instance berjalan bersamaan.
 
+Membuat shortcut-nya:
+
+```powershell
+$startup = [Environment]::GetFolderPath('Startup')
+$ws = New-Object -ComObject WScript.Shell
+$lnk = $ws.CreateShortcut((Join-Path $startup 'MangaShelf.lnk'))
+$lnk.TargetPath = 'powershell.exe'
+$lnk.Arguments = '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "D:\Ariq\2026\Me!\Projects\manga-shelf\scripts\run-server.ps1"'
+$lnk.WorkingDirectory = 'D:\Ariq\2026\Me!\Projects\manga-shelf'
+$lnk.Save()
+```
+
 Funnel dengan `--bg` otomatis aktif lagi setelah reboot atau restart Tailscale.
 
 ## Daya

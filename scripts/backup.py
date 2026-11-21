@@ -1,10 +1,11 @@
 """Salinan aman database SQLite, aman dijalankan saat aplikasi hidup.
 
-Di container:
-    docker compose exec -T app python scripts/backup.py
+Dari PC Windows:
+    $env:MANGA_DB = "D:\Ariq\2026\Me!\Projects\manga-shelf\data\manga.db"
+    .venv\Scripts\python.exe scripts\backup.py
 
 Menyimpan maksimal 14 salinan terakhir di folder yang sama dengan database
-(default: /data/backup).
+(default: data/backup).
 """
 
 import os
