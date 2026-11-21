@@ -33,9 +33,20 @@ Perkiraan waktu: 30–45 menit untuk pertama kali.
 2. Nama: `mangashelf`.
 3. Image: **Ubuntu 24.04** (atau versi LTS terbaru).
 4. Shape: **Ampere → VM.Standard.A1.Flex**, 1 OCPU / 6 GB. Shape ini termasuk
-   Always Free (total kuota 4 OCPU / 24 GB).
+   Always Free (total kuota **2 OCPU / 12 GB**; 1 OCPU / 6 GB memakai separuh
+   kuota dan menyisakan ruang untuk instance kedua).
 5. Boot volume: 50 GB (kuota Always Free 200 GB).
 6. Centang **Assign a public IPv4 address**.
+
+Always Free hanya berlaku di **home region** tenancy (lihat nama region di
+kanan atas konsol). Jika muncul error kapasitas A1, coba availability domain
+lain, ulangi beberapa saat lagi, atau pakai **VM.Standard.E2.1.Micro** (AMD,
+1/8 OCPU, 1 GB; dua instance gratis) yang cukup untuk aplikasi ini.
+
+> **Risiko reklamasi:** Oracle dapat mengambil kembali instance Always Free
+> yang dianggap idle (CPU dan jaringan di bawah 20% selama 7 hari). Karena
+> MangaShelf jarang diakses, ini mungkin terjadi. Cadangan rutin dan prosedur
+> restore di bagian 9 wajib disiapkan.
 7. Tambahkan SSH key publik dari komputer kamu
    (`C:\Users\<nama>\.ssh\id_ed25519.pub`).
 8. Setelah VM jadi, catat **public IP**-nya. Sebaiknya buat **Reserved public
